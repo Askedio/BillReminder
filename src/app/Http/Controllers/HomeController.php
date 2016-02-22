@@ -29,13 +29,56 @@ class HomeController extends Controller
     public function index()
     {
 
+      $_results = ['total' => 0, 'paid' => 0];
+      if(Auth::user()->calendar){
+        \App\GoogleCalendar\Calendar::setVar('calendar', Auth::user()->calendar);
+        $_items = \App\GoogleCalendar\Events::readEvents()->items;
 
-//Calendar::setVar('calendar', '');
-dd(\App\GoogleCalendar\Events::readEvents());
+/*
+
+loop items
+grab start time + tz
+make to date str
+
++"start": {#187 
+      +"dateTime": "2016-02-22T21:30:00Z"
+      +"timeZone": "America/Los_Angeles"
+    }
 
 
 
-$post = 
++"recurrence": array:1 [
+      0 => "RRULE:FREQ=MONTHLY;BYDAY=4MO"
+    ]
+
+
+*/
+
+        foreach($_items as $_item){
+          if(!isset($_item->description)) continue;
+          $_values = explode('|', $_item->description);
+          $_total  = number_format((isset($_values[0]) && is_numeric($_values[0]) ? $_values[0] : 0), 2);
+          $_paid   = isset($_values[2]) && $_values[2] = 'paid' ? $_values[2] : 'unpaid';
+
+          $_data[] = [
+            'summary'       => $_item->summary,
+            'description'   => $_item->description,
+            'total'         => $_total,
+            'payment_type'  => (isset($_values[1]) ? $_values[1] : 'n/a'),
+            'date'          => \Carbon\Carbon::createFromTimestamp(strtotime($_item->start->dateTime)),
+            'paid'          => $_paid,
+          ];
+
+          $_results['total'] = number_format($_results['total'] + $_total, 2);
+          if($_paid) $_results['paid'] = number_format($_total, 2);
+        }
+
+        $_results['events'] = $_data;
+      }
+
+
+// create/update event
+$event = 
     array(
   'summary' => 'Google I/O 2015',
   'location' => '800 Howard St., San Francisco, CA 94103',
@@ -65,30 +108,16 @@ $post =
 
     );
 
-//GoogleCalendar::deleteCalendar('kd0npb1udll8eqi88kqd3qa4ks@group.calendar.google.com');
-//dd(GoogleCalendar::$errors);
 
-/*
-
-update cal, = PUT 
-/calendarId
-description
-summary
+// crreate/update cal 
+$cal = [
+  'description' => '',
+  'summary'     => '',
+];
 
 
-update event = PUT
-PUT https://www.googleapis.com/calendar/v3/calendars/calendarId/events/eventI
 
 
-calendarId
-eventId
-same array as create
-*/
-
-
-$cal=GoogleCalendar::getEvents('primary');
-if($cal == false) dd(GoogleCalendar::$errors);
-dd($cal);
-        return view('home');
+        return view('home')->with($_results);;
     }
 }

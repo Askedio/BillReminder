@@ -4,8 +4,6 @@ namespace App\GoogleCalendar;
 
 class Calendar extends BaseClass
 {
-
-
     /**
      * Return json results when updating a calendar
      *
@@ -54,8 +52,17 @@ class Calendar extends BaseClass
      */
     private static function calendar($method, $data)
     {
-      self::setVar('url', (self::$calendar ? '/calendars/'.self::$calendar : '/users/me/calendarList'));
+      $url = self::$calendar != false 
+        ? (self::$calendar == 'create' 
+            ? '/calendars'
+            : '/calendars/'.self::$calendar
+          ) 
+        : '/users/me/calendarList';
+
+
+      self::setVar('url', $url);
       return self::$method($data);
     }
+
 
 }

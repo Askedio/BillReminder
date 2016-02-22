@@ -4,8 +4,6 @@ namespace App\GoogleCalendar;
 
 class Events extends BaseClass
 {
-
-
     /**
      * Return json results when posting events to a calendar
      *
@@ -15,7 +13,6 @@ class Events extends BaseClass
     {
       return self::events('post', $data);
     }
-
 
     /**
      * Return json list of events for a calendar
@@ -51,7 +48,6 @@ class Events extends BaseClass
       return self::events('remove', false, $event);
     }
 
-
     /**
      * Return calendar function based on method
      *
@@ -62,5 +58,6 @@ class Events extends BaseClass
       self::setVar('url', '/calendars/'.self::$calendar.'/events/'.$event);
       return self::$method($data);
     }
+
 
 }

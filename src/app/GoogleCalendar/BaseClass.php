@@ -15,8 +15,8 @@ class BaseClass
     private static $curl_method  = 'POST';
     private static $curl_data    = [];
 
-    public  static $start        = 'last month';
-    public  static $end          = 'next month';
+    public  static $start        = 'first day of this month';
+    public  static $end          = 'last day of this month';
 
     public  static $calendar     = 'primary';
 
@@ -113,7 +113,7 @@ class BaseClass
      */
     private static function get_url()
     {
-      echo self::$google_api.self::$url.self::build_request();
+     // echo self::$google_api.self::$url.self::build_request();
       return self::$google_api.self::$url.self::build_request();
     }
 
