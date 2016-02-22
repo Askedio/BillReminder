@@ -13,6 +13,9 @@ class GoogleCalendarHelper
     private static $curl_method  = 'POST';
     private static $curl_data    = [];
 
+    private static $start        = 'last month';
+    private static $end          = 'next month';
+
 
     /**
      * Create a new controller instance.
@@ -27,26 +30,35 @@ class GoogleCalendarHelper
     
     }
 
+
     /**
-     * Return json list of calendars
+     * Return json results when updating a calendar
      *
      * @return object()
      */
-    public static function getCalendars()
+    public static function createCalendar($calendar, $data=[])
     {
-      self::setVar('url', '/users/me/calendarList');
-      return self::get();
+      return self::calendar($calendar, 'put', $data);
     }
 
     /**
-     * Return json details of a calendar
+     * Return json details of a calendar or if no calendar defined, a list of calendars
      *
      * @return object()
      */
-    public static function getCalendar($calendar)
+    public static function readCalendar($calendar=false)
     {
-      self::setVar('url', '/calendars/'.$calendar);
-      return self::get();
+      return self::calendar($calendar, 'get', false);
+    }
+    
+    /**
+     * Return json results when updating a calendar
+     *
+     * @return object()
+     */
+    public static function updateCalendar($calenda, $data=[])
+    {
+      return self::calendar($calendar, 'put', $data);
     }
 
     /**
@@ -56,8 +68,7 @@ class GoogleCalendarHelper
      */
     public static function deleteCalendar($calendar)
     {
-      self::setVar('url', '/calendars/'.$calendar);
-      return self::remove();
+      return self::calendar($calendar, 'remove', false);
     }
 
     /**
@@ -68,6 +79,10 @@ class GoogleCalendarHelper
     public static function getEvents($calendar='primary')
     {
       self::setVar('url', '/calendars/'.$calendar.'/events');
+      self::setVar('request', [
+        'timeMin' => self::get_time(self::$start),
+        'timeMax' => self::get_time(self::$end),
+      ]);
       return self::get();
     }
 
@@ -113,6 +128,18 @@ class GoogleCalendarHelper
     {
       self::setVar('curl_data', json_encode($post));
       self::setVar('curl_method', 'POST');
+      return self::curl();
+    }
+
+    /**
+     * Return json from google api or false
+     *
+     * @return object()
+     */
+    private static function put($put=[])
+    {
+      self::setVar('curl_data', json_encode($put));
+      self::setVar('curl_method', 'PUT');
       return self::curl();
     }
 
@@ -200,5 +227,26 @@ class GoogleCalendarHelper
     {
       self::$$var = $val;
       return false;
+    }
+
+    /**
+     * Return date RFC3339
+     *
+     * @return false
+     */
+    private static function get_time($time='today')
+    {
+      return date("Y-m-d\TH:i:sP", strtotime($time));
+    }
+
+    /**
+     * Return function based on method
+     *
+     * @return object()
+     */
+    private static function calendar($calendar, $method, $data)
+    {
+      self::setVar('url', ($calendar ? '/calendars/'.$calendar : '/users/me/calendarList'));
+      return self::$method($data);
     }
 }
