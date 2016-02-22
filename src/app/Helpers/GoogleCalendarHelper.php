@@ -9,7 +9,8 @@ class GoogleCalendarHelper
     private static $google_api = 'https://www.googleapis.com/calendar/v3';
     private static $url        = '';
     private static $request    = [];
-    public  static $errors      = false;
+    public  static $errors     = false;
+    private static $curl_opts  = [];
 
     /* 
       command functions
@@ -84,7 +85,8 @@ class GoogleCalendarHelper
      */
     public static function get()
     {
-      return self::curl();
+     self::setVar('curl_opts', false);
+     return self::curl();
     }
 
     /**
@@ -94,7 +96,8 @@ class GoogleCalendarHelper
      */
     public static function remove()
     {
-      return self::curl('DELETE');
+      self::setVar('curl_opts', 'DELETE');
+      return self::curl();
     }
 
     /**
@@ -104,7 +107,8 @@ class GoogleCalendarHelper
      */
     public static function post($post=[])
     {
-      return self::curl($post);
+      self::setVar('curl_opts', json_encode($post));
+      return self::curl();
     }
 
     /**
@@ -135,26 +139,33 @@ class GoogleCalendarHelper
      *
      * @return curl_exec()
      */
-    private static function curl($post=false)
+    private static function curl()
     {
-      $ch = curl_init();
-      curl_setopt($ch, CURLOPT_URL, self::get_url());
-
-      if($post == 'DELETE'){
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
-      } elseif($post){
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($post)); 
-      }
-
-      curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-      curl_setopt($ch, CURLOPT_HTTPHEADER, self::curl_headers());
+      $ch      = self::curl_open();
       $results = json_decode(curl_exec($ch));
       curl_close ($ch);
-
       return is_object($results) ? self::check_errors($results) : false;
     }
 
+    /**
+     * Return 
+     *
+     * @return 
+     */
+    private static function curl_open()
+    {
+      $ch = curl_init();
+      curl_setopt($ch, CURLOPT_URL, self::get_url());
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+      curl_setopt($ch, CURLOPT_HTTPHEADER, self::curl_headers());
+      if(self::$curl_opts == 'DELETE'){
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+      } elseif(self::$curl_opts){
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, self::$curl_opts); 
+      }
+      return $ch;
+    }
 
     /**
      * Return boolean if error exists on curl result
@@ -164,7 +175,7 @@ class GoogleCalendarHelper
     private static function check_errors($results)
     {
       if(isset($results->error->errors)){
-        self::$errors = $results->error->errors;
+        self::setVar('errors', $results->error->errors);
         return false;
       } else return $results;
     }
