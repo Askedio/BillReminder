@@ -206,6 +206,9 @@ return [
 
         'Socialite' => Laravel\Socialite\Facades\Socialite::class,
 
+        'GoogleCalendar' => App\GoogleCalendar\BaseClass::class,
+        'Calendar'       => App\GoogleCalendar\Calendar::class,
+
     ],
 
 ];

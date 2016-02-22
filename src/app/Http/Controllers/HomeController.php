@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Auth;
 use GoogleCalendar;
 
-use GoogleCalendarHelper;
+use Calendar;
 
 class HomeController extends Controller
 {
@@ -28,6 +28,10 @@ class HomeController extends Controller
      */
     public function index()
     {
+
+
+//Calendar::setVar('calendar', '');
+dd(\App\GoogleCalendar\Events::readEvents());
 
 
 
@@ -61,13 +65,30 @@ $post =
 
     );
 
-GoogleCalendar::deleteCalendar('kd0npb1udll8eqi88kqd3qa4ks@group.calendar.google.com');
-dd(GoogleCalendar::$errors);
+//GoogleCalendar::deleteCalendar('kd0npb1udll8eqi88kqd3qa4ks@group.calendar.google.com');
+//dd(GoogleCalendar::$errors);
+
+/*
+
+update cal, = PUT 
+/calendarId
+description
+summary
 
 
-$cal=GoogleCalendar::postEvents('primary', $post);
+update event = PUT
+PUT https://www.googleapis.com/calendar/v3/calendars/calendarId/events/eventI
+
+
+calendarId
+eventId
+same array as create
+*/
+
+
+$cal=GoogleCalendar::getEvents('primary');
 if($cal == false) dd(GoogleCalendar::$errors);
-
+dd($cal);
         return view('home');
     }
 }
