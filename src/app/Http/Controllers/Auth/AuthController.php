@@ -119,6 +119,8 @@ class AuthController extends Controller
     {
 
         if ($authUser = User::where('email', $user->email)->first()) {
+            $authUser->token = $user->token;
+            $authUser->save();
             return $authUser;
         }
 

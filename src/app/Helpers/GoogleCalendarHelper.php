@@ -9,6 +9,73 @@ class GoogleCalendarHelper
     private static $google_api = 'https://www.googleapis.com/calendar/v3';
     private static $url        = '';
     private static $request    = [];
+    public  static $errors      = false;
+
+    /* 
+      command functions
+    */
+
+    /**
+     * Return json list of calendars
+     *
+     * @return object()
+     */
+    public static function getCalendars()
+    {
+      self::setVar('url', '/users/me/calendarList');
+      return self::get();
+    }
+
+    /**
+     * Return json details of a calendar
+     *
+     * @return object()
+     */
+    public static function getCalendar($calendar)
+    {
+      self::setVar('url', '/calendars/'.$calendar);
+      return self::get();
+    }
+
+    /**
+     * Return json details of a calendar
+     *
+     * @return object()
+     */
+    public static function deleteCalendar($calendar)
+    {
+      self::setVar('url', '/calendars/'.$calendar);
+      return self::remove();
+    }
+
+    /**
+     * Return json of events for a calendar
+     *
+     * @return object()
+     */
+    public static function getEvents($calendar='primary')
+    {
+      self::setVar('url', '/calendars/'.$calendar.'/events');
+      return self::get();
+    }
+
+
+    /**
+     * Return json of events for a calendar
+     *
+     * @return object()
+     */
+    public static function postEvents($calendar='primary', $post=[])
+    {
+      self::setVar('url', '/calendars/'.$calendar.'/events');
+      return self::post($post);
+    }
+
+
+    /*
+      backend functions
+    */
+
 
     /**
      * Return json from google api or false
@@ -25,9 +92,19 @@ class GoogleCalendarHelper
      *
      * @return object()
      */
+    public static function remove()
+    {
+      return self::curl('DELETE');
+    }
+
+    /**
+     * Return json from google api or false
+     *
+     * @return object()
+     */
     public static function post($post=[])
     {
-      return self::curl(true);
+      return self::curl($post);
     }
 
     /**
@@ -63,7 +140,9 @@ class GoogleCalendarHelper
       $ch = curl_init();
       curl_setopt($ch, CURLOPT_URL, self::get_url());
 
-      if($post){
+      if($post == 'DELETE'){
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+      } elseif($post){
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($post)); 
       }
@@ -73,9 +152,24 @@ class GoogleCalendarHelper
       $results = json_decode(curl_exec($ch));
       curl_close ($ch);
 
-      return is_object($results) ? $results : false;
+      return is_object($results) ? self::check_errors($results) : false;
     }
 
+
+    /**
+     * Return boolean if error exists on curl result
+     *
+     * @return boolean
+     */
+    private static function check_errors($results)
+    {
+      if(isset($results->error->errors)){
+        self::$errors = $results->error->errors;
+        return false;
+      } else return $results;
+    }
+
+    
     /**
      * Return request query
      *
