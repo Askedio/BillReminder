@@ -10,11 +10,15 @@ class GoogleCalendarHelper
     private static $url        = '';
     private static $request    = [];
     public  static $errors     = false;
-    private static $curl_opts  = [];
+    private static $curl_opts  = 'POST';
+    private static $curl_data  = [];
 
     /* 
       command functions
     */
+
+
+
 
     /**
      * Return json list of calendars
@@ -39,7 +43,7 @@ class GoogleCalendarHelper
     }
 
     /**
-     * Return json details of a calendar
+     * Return json results when removing a calendar
      *
      * @return object()
      */
@@ -50,7 +54,7 @@ class GoogleCalendarHelper
     }
 
     /**
-     * Return json of events for a calendar
+     * Return json list of events for a calendar
      *
      * @return object()
      */
@@ -60,9 +64,8 @@ class GoogleCalendarHelper
       return self::get();
     }
 
-
     /**
-     * Return json of events for a calendar
+     * Return json results when posting events to a calendar
      *
      * @return object()
      */
@@ -71,6 +74,12 @@ class GoogleCalendarHelper
       self::setVar('url', '/calendars/'.$calendar.'/events');
       return self::post($post);
     }
+
+
+
+
+
+
 
 
     /*
@@ -107,7 +116,8 @@ class GoogleCalendarHelper
      */
     public static function post($post=[])
     {
-      self::setVar('curl_opts', json_encode($post));
+      self::setVar('curl_data', json_encode($post));
+      self::setVar('curl_opts', 'POST');
       return self::curl();
     }
 
@@ -121,7 +131,7 @@ class GoogleCalendarHelper
       return [
          'Content-type: application/json',
          'Authorization: Bearer ' . Auth::user()->token
-        ];
+      ];
     }
 
     /**
@@ -137,7 +147,7 @@ class GoogleCalendarHelper
     /**
      * Return result of curl get/post
      *
-     * @return curl_exec()
+     * @return object/false
      */
     private static function curl()
     {
@@ -148,9 +158,9 @@ class GoogleCalendarHelper
     }
 
     /**
-     * Return 
+     * Return curl 
      *
-     * @return 
+     * @return curl_init();
      */
     private static function curl_open()
     {
@@ -158,12 +168,9 @@ class GoogleCalendarHelper
       curl_setopt($ch, CURLOPT_URL, self::get_url());
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
       curl_setopt($ch, CURLOPT_HTTPHEADER, self::curl_headers());
-      if(self::$curl_opts == 'DELETE'){
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
-      } elseif(self::$curl_opts){
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, self::$curl_opts); 
-      }
+      if(self::$curl_opts == 'POST') curl_setopt($ch, CURLOPT_POST, true);
+      if(in_array(self::$curl_opts, ['DELETE', 'PUT'])) curl_setopt($ch, CURLOPT_CUSTOMREQUEST, self::$curl_opts);
+      if(in_array(self::$curl_opts, ['POST', 'PUT']))   curl_setopt($ch, CURLOPT_POSTFIELDS, self::$curl_data); 
       return $ch;
     }
 
@@ -174,13 +181,11 @@ class GoogleCalendarHelper
      */
     private static function check_errors($results)
     {
-      if(isset($results->error->errors)){
-        self::setVar('errors', $results->error->errors);
-        return false;
-      } else return $results;
+      return isset($results->error->errors) 
+        ? self::setVar('errors', $results->error->errors) 
+        : $results;
     }
-
-    
+  
     /**
      * Return request query
      *
@@ -194,14 +199,11 @@ class GoogleCalendarHelper
     /**
      * Set class variables
      *
-     * @return 
+     * @return false
      */
     public static function setVar($var, $val)
     {
       self::$$var = $val;
+      return false;
     }
-
-
-
-
 }
