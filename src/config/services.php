@@ -36,9 +36,9 @@ return [
     ],
 
     'google' => [
-        'client_id' => '1061163105853-rmf5curcpe58um20csru76787tq7t6ed.apps.googleusercontent.com',
+        'client_id'     => '1061163105853-rmf5curcpe58um20csru76787tq7t6ed.apps.googleusercontent.com',
         'client_secret' => 'xE2K289i2kI76G98UMYghkZf',
-        'redirect' => 'http://localhost:8000/authorize',
+        'redirect'      => 'http://localhost:8000/authorize',
     ],
 
 ];

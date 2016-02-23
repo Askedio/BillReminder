@@ -2,20 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests;
-use Illuminate\Http\Request;
 use Auth;
-use GoogleCalendar;
-
 use Calendar;
 
 class HomeController extends Controller
 {
-
-
-private function sortByOrder($a, $b) {
-    return $a['date']->timestamp - $b['date']->timestamp;
-}
+    private function sortByOrder($a, $b)
+    {
+        return $a['date']->timestamp - $b['date']->timestamp;
+    }
 
     /**
      * Create a new controller instance.
@@ -34,19 +29,18 @@ private function sortByOrder($a, $b) {
      */
     public function index()
     {
-
-      $_results = ['total' => 0, 'paid' => 0, 'events' => []];
-      if(Auth::user()->calendar){
-        \App\GoogleCalendar\Calendar::setVar('calendar', Auth::user()->calendar);
-        $_items = \App\GoogleCalendar\Events::readEvents();
-        $errors = \App\GoogleCalendar\Calendar::$errors;
+        $_results = ['total' => 0, 'paid' => 0, 'events' => []];
+        if (Auth::user()->calendar) {
+            \App\GoogleCalendar\Calendar::setVar('calendar', Auth::user()->calendar);
+            $_items = \App\GoogleCalendar\Events::readEvents();
+            $errors = \App\GoogleCalendar\Calendar::$errors;
 
         /* TO-DO: need proper error checking, in this case notFound = reset calendar */
-        if(is_array($errors)){
-          if($errors[0]->reason == 'notFound'){
-            Auth::user()->calendar = '';
-            Auth::user()->save();
-          }
+        if (is_array($errors)) {
+            if ($errors[0]->reason == 'notFound') {
+                Auth::user()->calendar = '';
+                Auth::user()->save();
+            }
         }
 
 /*
@@ -69,16 +63,18 @@ make to date str
 
 */
 
-      if(isset($_items->items) && count($_items->items) > 0){
-        $_data = [];
-        foreach($_items->items as $_item){
-          if(!isset($_item->description)) continue;
+      if (isset($_items->items) && count($_items->items) > 0) {
+          $_data = [];
+          foreach ($_items->items as $_item) {
+              if (!isset($_item->description)) {
+                  continue;
+              }
 
-          $_values = explode('|', $_item->description);
-          $_total  = isset($_values[0]) && is_numeric($_values[0]) ? $_values[0] : 0;
-          $_paid   = isset($_values[2]) && $_values[2] == 'paid' ? true : false;
+              $_values = explode('|', $_item->description);
+              $_total = isset($_values[0]) && is_numeric($_values[0]) ? $_values[0] : 0;
+              $_paid = isset($_values[2]) && $_values[2] == 'paid' ? true : false;
 
-          $_data[] = [
+              $_data[] = [
             'id'            => $_item->id,
             'rec_id'        => isset($_item->recurringEventId) ? $_item->recurringEventId : false,
             'summary'       => $_item->summary,
@@ -89,61 +85,54 @@ make to date str
             'paid'          => $_paid,
           ];
 
-          $_results['total'] = $_results['total'] + $_total;
-          if($_paid) $_results['paid'] = $_total;
-       }
-       
+              $_results['total'] = $_results['total'] + $_total;
+              if ($_paid) {
+                  $_results['paid'] = $_total;
+              }
+          }
 
+          usort($_data, ['App\Http\Controllers\HomeController', 'sortByOrder']);
 
-
-usort($_data, ['App\Http\Controllers\HomeController','sortByOrder']);
-
-
-        $_results['events'] = $_data;
-
-        }
+          $_results['events'] = $_data;
       }
+        }
 
 // create/update event
-$event = 
-    array(
-  'summary' => 'Google I/O 2015',
-  'location' => '800 Howard St., San Francisco, CA 94103',
-  'description'=> 'A chance to hear more about Google\'s developer products.',
-  'start' => [
-    'dateTime'=> '2016-02-23T09:00:00-07:00',
-    'timeZone'=>'America/Los_Angeles'
+$event =
+    [
+  'summary'     => 'Google I/O 2015',
+  'location'    => '800 Howard St., San Francisco, CA 94103',
+  'description' => 'A chance to hear more about Google\'s developer products.',
+  'start'       => [
+    'dateTime' => '2016-02-23T09:00:00-07:00',
+    'timeZone' => 'America/Los_Angeles',
   ],
   'end' => [
     'dateTime' => '2016-02-24T17:00:00-07:00',
-    'timeZone'=> 'America/Los_Angeles'
+    'timeZone' => 'America/Los_Angeles',
   ],
-  'recurrence'=> [
-    'RRULE:FREQ=DAILY;COUNT=2'
+  'recurrence' => [
+    'RRULE:FREQ=DAILY;COUNT=2',
   ],
-  'attendees'=> [
-    ['email'=> 'lpage@example.com'],
-    ['email'=> 'sbrin@example.com']
+  'attendees' => [
+    ['email' => 'lpage@example.com'],
+    ['email' => 'sbrin@example.com'],
   ],
-  'reminders'=> [
-    'useDefault'=> false,
-    'overrides'=> [
-      ['method'=> 'email', 'minutes'=> 24 * 60],
-      ['method'=> 'popup', 'minutes'=> 10]
-    ]
-  ]
+  'reminders' => [
+    'useDefault' => false,
+    'overrides'  => [
+      ['method' => 'email', 'minutes' => 24 * 60],
+      ['method' => 'popup', 'minutes' => 10],
+    ],
+  ],
 
-    );
+    ];
 
-
-// crreate/update cal 
+// crreate/update cal
 $cal = [
   'description' => '',
   'summary'     => '',
 ];
-
-
-
 
         return view('home')->with($_results);
     }
