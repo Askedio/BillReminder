@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\User;
-use Validator;
 use App\Http\Controllers\Controller;
-use Illuminate\Foundation\Auth\ThrottlesLogins;
-use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
-use Socialite;
-use Illuminate\Http\Request;
+use App\User;
 use Auth;
+use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
+use Illuminate\Foundation\Auth\ThrottlesLogins;
+use Illuminate\Http\Request;
 use Redirect;
+use Socialite;
+use Validator;
 
 class AuthController extends Controller
 {
@@ -46,14 +46,15 @@ class AuthController extends Controller
     /**
      * Get a validator for an incoming registration request.
      *
-     * @param  array  $data
+     * @param array $data
+     *
      * @return \Illuminate\Contracts\Validation\Validator
      */
     protected function validator(array $data)
     {
         return Validator::make($data, [
-            'name' => 'required|max:255',
-            'email' => 'required|email|max:255|unique:users',
+            'name'     => 'required|max:255',
+            'email'    => 'required|email|max:255|unique:users',
             'password' => 'required|confirmed|min:6',
         ]);
     }
@@ -61,18 +62,18 @@ class AuthController extends Controller
     /**
      * Create a new user instance after a valid registration.
      *
-     * @param  array  $data
+     * @param array $data
+     *
      * @return User
      */
     protected function create(array $data)
     {
         return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
+            'name'     => $data['name'],
+            'email'    => $data['email'],
             'password' => bcrypt($data['password']),
         ]);
     }
-
 
     /**
      * Redirect the user to the Google authentication page.
@@ -81,7 +82,6 @@ class AuthController extends Controller
      */
     public function redirectToProvider()
     {
-
         $scopes = [
           'https://www.googleapis.com/auth/calendar',
           'https://www.googleapis.com/auth/plus.me',
@@ -111,38 +111,35 @@ class AuthController extends Controller
     }
 
     /**
-     * Find or create the user, bad example - this is model work
+     * Find or create the user, bad example - this is model work.
      *
      * @return Response
      */
     private function findOrCreateUser($user)
     {
-
         if ($authUser = User::where('email', $user->email)->first()) {
             $authUser->token = $user->token;
             $authUser->save();
+
             return $authUser;
         }
 
         return User::create([
-            'name' => $user->name,
-            'email' => $user->email,
+            'name'      => $user->name,
+            'email'     => $user->email,
             'google_id' => $user->id,
-            'avatar' => $user->avatar,
-            'token' => $user->token
+            'avatar'    => $user->avatar,
+            'token'     => $user->token,
         ]);
     }
 
+    public function showLoginForm()
+    {
+        return Redirect::to('/auth');
+    }
 
-  public function showLoginForm()
-  {
-    return Redirect::to('/auth');
-  }
-
-  public function showRegistrationForm()
-  {
-    return Redirect::to('/auth');
-  }
-
-
+    public function showRegistrationForm()
+    {
+        return Redirect::to('/auth');
+    }
 }

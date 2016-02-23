@@ -10,9 +10,10 @@ class Authenticate
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
-     * @param  string|null  $guard
+     * @param \Illuminate\Http\Request $request
+     * @param \Closure                 $next
+     * @param string|null              $guard
+     *
      * @return mixed
      */
     public function handle($request, Closure $next, $guard = null)
@@ -22,16 +23,16 @@ class Authenticate
         \App\GoogleCalendar\Calendar::setVar('calendar', 'primary');
         \App\GoogleCalendar\Calendar::readCalendar();
         $errors = \App\GoogleCalendar\Calendar::$errors;
-        if(is_array($errors)){
-          Auth::logout();
-          if ($request->ajax() || $request->wantsJson()) {
-              return response('Token Expired.', 401);
-          } else {
-              return redirect('/')->with(['error' => 'Token Expired']);
-          }
+        if (is_array($errors)) {
+            Auth::logout();
+            if ($request->ajax() || $request->wantsJson()) {
+                return response('Token Expired.', 401);
+            } else {
+                return redirect('/')->with(['error' => 'Token Expired']);
+            }
         }
 
-       if (Auth::guard($guard)->guest()) {
+        if (Auth::guard($guard)->guest()) {
             if ($request->ajax() || $request->wantsJson()) {
                 return response('Unauthorized.', 401);
             } else {
