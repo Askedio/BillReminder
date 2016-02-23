@@ -1,7 +1,15 @@
 @extends('layouts.app')
 
 @section('content')
+
+
 <section class="container">
+  @if(Session::get('error'))
+    <div class="alert alert-danger text-center">  
+      <h4>You have been logged out, {{ Session::get('error') }}</h4>
+    </div>
+  @endif
+
   <div class="jumbotron">
     <h1>BillReminder <sup style="font-size: 20px"> Beta</sup></h1>
     <p>A Google Calendar based Bill Reminder service.</p>

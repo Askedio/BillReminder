@@ -19,13 +19,14 @@ class Events extends BaseClass
      *
      * @return object()
      */
-    public static function readEvents()
+    public static function readEvents($event=false)
     {
       self::setVar('request', [
         'timeMin' => self::get_time(self::$start),
         'timeMax' => self::get_time(self::$end),
+        'singleEvents' => 'true',
       ]);
-      return self::events('get', false);
+      return self::events('get', $event);
     }
     
     /**

@@ -17,7 +17,21 @@ class Authenticate
      */
     public function handle($request, Closure $next, $guard = null)
     {
-        if (Auth::guard($guard)->guest()) {
+
+        // TO-DO: really needs a better solution.
+        \App\GoogleCalendar\Calendar::setVar('calendar', 'primary');
+        \App\GoogleCalendar\Calendar::readCalendar();
+        $errors = \App\GoogleCalendar\Calendar::$errors;
+        if(is_array($errors)){
+          Auth::logout();
+          if ($request->ajax() || $request->wantsJson()) {
+              return response('Token Expired.', 401);
+          } else {
+              return redirect('/')->with(['error' => 'Token Expired']);
+          }
+        }
+
+       if (Auth::guard($guard)->guest()) {
             if ($request->ajax() || $request->wantsJson()) {
                 return response('Unauthorized.', 401);
             } else {

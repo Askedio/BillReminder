@@ -15,25 +15,10 @@ class BaseClass
     private static $curl_method  = 'POST';
     private static $curl_data    = [];
 
-    public  static $start        = 'first day of this month';
+    public  static $start        = 'last day of last month';
     public  static $end          = 'last day of this month';
 
     public  static $calendar     = 'primary';
-
-
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-      /*
-        TO-DO: validate users token, if invalid lets fix it and then come back? or what?
-                - maybe just error out instead? auth validation needs to occur before we get here to prevent issues in user flow
-      */
-    
-    }
 
 
     /**
@@ -86,7 +71,7 @@ class BaseClass
      *
      * @return object()
      */
-    private static function put($put=[])
+    public static function put($put=[])
     {
       self::setVar('curl_data', json_encode($put));
       self::setVar('curl_method', 'PUT');
@@ -176,7 +161,8 @@ class BaseClass
      */
     public static function get_time($time='today')
     {
-      return date("Y-m-d\TH:i:sP", strtotime($time));
+      $dt = new \DateTime($time, new \DateTimeZone(config('timezone', 'America/Los_Angeles')));
+      return $dt->format('Y-m-d\TH:i:sP');
     }
 
 

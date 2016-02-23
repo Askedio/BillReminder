@@ -30,21 +30,14 @@ Route::group(['middleware' => ['web']], function () {
   Route::get('/auth', 'Auth\AuthController@redirectToProvider');
 });
 
-
-
-
 Route::group(['middleware' => 'web'], function () {
     Route::auth();
 
-    Route::get('/', function () {
-        return view('welcome');
-    });
-
+    Route::get('/', function(){return view('welcome');});
     Route::get('/home', 'HomeController@index');
     Route::resource('/calendar', 'CalendarController');
-
-
-
-
+    Route::resource('/event', 'EventController');
+    Route::get('/event/delete/{event}', 'EventController@delete');
+    Route::get('/event/paid/{event}', 'EventController@paid');
+    Route::get('/event/unpaid/{event}', 'EventController@unpaid');
 });
-

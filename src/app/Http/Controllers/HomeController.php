@@ -11,6 +11,12 @@ use Calendar;
 
 class HomeController extends Controller
 {
+
+
+private function sortByOrder($a, $b) {
+    return $a['date']->timestamp - $b['date']->timestamp;
+}
+
     /**
      * Create a new controller instance.
      *
@@ -29,10 +35,19 @@ class HomeController extends Controller
     public function index()
     {
 
-      $_results = ['total' => 0, 'paid' => 0];
+      $_results = ['total' => 0, 'paid' => 0, 'events' => []];
       if(Auth::user()->calendar){
         \App\GoogleCalendar\Calendar::setVar('calendar', Auth::user()->calendar);
-        $_items = \App\GoogleCalendar\Events::readEvents()->items;
+        $_items = \App\GoogleCalendar\Events::readEvents();
+        $errors = \App\GoogleCalendar\Calendar::$errors;
+
+        /* TO-DO: need proper error checking, in this case notFound = reset calendar */
+        if(is_array($errors)){
+          if($errors[0]->reason == 'notFound'){
+            Auth::user()->calendar = '';
+            Auth::user()->save();
+          }
+        }
 
 /*
 
@@ -54,13 +69,18 @@ make to date str
 
 */
 
-        foreach($_items as $_item){
+      if(isset($_items->items) && count($_items->items) > 0){
+        $_data = [];
+        foreach($_items->items as $_item){
           if(!isset($_item->description)) continue;
+
           $_values = explode('|', $_item->description);
-          $_total  = number_format((isset($_values[0]) && is_numeric($_values[0]) ? $_values[0] : 0), 2);
-          $_paid   = isset($_values[2]) && $_values[2] = 'paid' ? $_values[2] : 'unpaid';
+          $_total  = isset($_values[0]) && is_numeric($_values[0]) ? $_values[0] : 0;
+          $_paid   = isset($_values[2]) && $_values[2] == 'paid' ? true : false;
 
           $_data[] = [
+            'id'            => $_item->id,
+            'rec_id'        => isset($_item->recurringEventId) ? $_item->recurringEventId : false,
             'summary'       => $_item->summary,
             'description'   => $_item->description,
             'total'         => $_total,
@@ -69,13 +89,20 @@ make to date str
             'paid'          => $_paid,
           ];
 
-          $_results['total'] = number_format($_results['total'] + $_total, 2);
-          if($_paid) $_results['paid'] = number_format($_total, 2);
-        }
+          $_results['total'] = $_results['total'] + $_total;
+          if($_paid) $_results['paid'] = $_total;
+       }
+       
+
+
+
+usort($_data, ['App\Http\Controllers\HomeController','sortByOrder']);
+
 
         $_results['events'] = $_data;
-      }
 
+        }
+      }
 
 // create/update event
 $event = 
@@ -118,6 +145,6 @@ $cal = [
 
 
 
-        return view('home')->with($_results);;
+        return view('home')->with($_results);
     }
 }
