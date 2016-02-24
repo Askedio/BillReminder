@@ -36,7 +36,11 @@ Create .env
    
     GOOGLE_API_KEY=
    
-
+    GOOGLE_CLIENT_ID=<oauth client id>
+    GOOGLE_SECRET=<oauth secret>
+    GOOGLE_REDIRECT=http://localhost:8000/authorize
+        
+        
 Google API Key is optinal
 
 After .env is created, migrate
