@@ -177,6 +177,7 @@ class BaseClass
     private static function build_request()
     {
         $_key = env('GOOGLE_API_KEY') ? ['key' => env('GOOGLE_API_KEY')] : [];
+
         return '?'.http_build_query(array_merge(self::$request, $_key));
     }
 
