@@ -38,13 +38,13 @@ class EventController extends Controller
           'timeZone' => config('timezone', 'America/Los_Angeles'),
         ],
         'recurrence' => [
-          'RRULE:FREQ=MONTHLY',
+          'RRULE:FREQ='.str_replace(' ', '', strtoupper($request->input('repeat'))),
         ],
         'reminders' => [
           'useDefault' => false,
           'overrides'  => [
-              ['method' => 'email', 'minutes' => 24 * 60],
-              ['method' => 'popup', 'minutes' => 10],
+              ['method' => 'email', 'minutes' => $request->input('reminder_email')],
+              ['method' => 'popup', 'minutes' => $request->input('reminder_popup')],
           ],
         ],
       ];
