@@ -66,7 +66,9 @@ make to date str
       if (isset($_items->items) && count($_items->items) > 0) {
           $_data = [];
           foreach ($_items->items as $_item) {
-            if (!isset($_item->description)) continue;
+              if (!isset($_item->description)) {
+                  continue;
+              }
               $_values = explode('|', $_item->description);
               $_total = isset($_values[0]) && is_numeric($_values[0]) ? $_values[0] : 0;
               $_paid = isset($_values[2]) && $_values[2] == 'paid' ? true : false;
@@ -86,12 +88,12 @@ make to date str
               if ($_paid) {
                   $_results['paid'] = $_total;
               }
-            }
-
-            usort($_data, ['App\Http\Controllers\HomeController', 'sortByOrder']);
-
-            $_results['events'] = $_data;
           }
+
+          usort($_data, ['App\Http\Controllers\HomeController', 'sortByOrder']);
+
+          $_results['events'] = $_data;
+      }
         }
 
         return view('home')->with($_results);

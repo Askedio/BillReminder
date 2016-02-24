@@ -111,7 +111,7 @@ class EventController extends Controller
           'description' => str_replace('unpaid', 'paid', $_me->description),
         ];
 
-       \App\GoogleCalendar\Events::updateEvents($event, $_event);
+        \App\GoogleCalendar\Events::updateEvents($event, $_event);
          //  \App\GoogleCalendar\Events::$errors;
 
       return redirect('home')->withSuccess(true);
