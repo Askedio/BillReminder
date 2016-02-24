@@ -76,11 +76,7 @@
               <td>{{ $event['payment_type'] }}</td>
               <td>${{ number_format($event['total'],2) }}</td>
               <td class="text-center">
-                <a href="{{
-                
-url('/event/'.($event['paid'] ? 'unpaid' : 'paid' ).'/' . $event['id'])
-
-                }}"><em class="fa @if($event['paid'])
+                <a href="{{ url('/event/'.($event['paid'] ? 'unpaid' : 'paid' ).'/' . $event['id']) }}"><em class="fa @if($event['paid'])
                   fa-check text-success
                 @else
                   fa-close text-danger
@@ -138,12 +134,6 @@ url('/event/'.($event['paid'] ? 'unpaid' : 'paid' ).'/' . $event['id'])
           </form>
         </div>
       </div>
-
-
-
-    <a class="btn btn-danger btn-lg" href="{{ url('/logout') }}"><i class="fa fa-btn fa-sign-out"></i>Logout</a>
-
-
 @endif
   </section>
 

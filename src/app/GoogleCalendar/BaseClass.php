@@ -74,6 +74,19 @@ class BaseClass
      *
      * @return object()
      */
+    public static function patch($patch = [])
+    {
+        self::setVar('curl_data', json_encode($patch));
+        self::setVar('curl_method', 'PATCH');
+
+        return self::curl();
+    }
+
+    /**
+     * Return json from google api or false.
+     *
+     * @return object()
+     */
     public static function put($put = [])
     {
         self::setVar('curl_data', json_encode($put));
@@ -134,10 +147,10 @@ class BaseClass
         if (self::$curl_method == 'POST') {
             curl_setopt($ch, CURLOPT_POST, true);
         }
-        if (in_array(self::$curl_method, ['DELETE', 'PUT'])) {
+        if (in_array(self::$curl_method, ['DELETE', 'PUT', 'PATCH'])) {
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, self::$curl_method);
         }
-        if (in_array(self::$curl_method, ['POST', 'PUT'])) {
+        if (in_array(self::$curl_method, ['POST', 'PUT', 'PATCH'])) {
             curl_setopt($ch, CURLOPT_POSTFIELDS, self::$curl_data);
         }
 
@@ -163,7 +176,8 @@ class BaseClass
      */
     private static function build_request()
     {
-        return '?'.http_build_query(array_merge(self::$request, ['key' => env('GOOGLE_API_KEY')]));
+        $_key = env('GOOGLE_API_KEY') ? ['key' => env('GOOGLE_API_KEY')] : [];
+        return '?'.http_build_query(array_merge(self::$request, $_key));
     }
 
     /**

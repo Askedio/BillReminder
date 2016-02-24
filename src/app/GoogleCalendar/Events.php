@@ -27,7 +27,7 @@ class Events extends BaseClass
         'singleEvents' => 'true',
       ]);
 
-        return self::events('get', $event);
+        return self::events('get', false, $event);
     }
 
     /**
@@ -37,7 +37,7 @@ class Events extends BaseClass
      */
     public static function updateEvents($event, $data = [])
     {
-        return self::events('put', $data, $event);
+        return self::events('patch', $data, $event);
     }
 
     /**

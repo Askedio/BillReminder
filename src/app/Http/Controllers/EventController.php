@@ -80,7 +80,7 @@ class EventController extends Controller
     public function unpaid(Request $request, $event)
     {
         \App\GoogleCalendar\Events::setVar('calendar', Auth::user()->calendar);
-        $_me = \App\GoogleCalendar\Events::readEvents($event)->items[0];
+        $_me = \App\GoogleCalendar\Events::readEvents($event);
 
         $_event = [
         'summary'     => $_me->summary,
@@ -104,23 +104,15 @@ class EventController extends Controller
     public function paid(Request $request, $event)
     {
         \App\GoogleCalendar\Events::setVar('calendar', Auth::user()->calendar);
-        $_me = \App\GoogleCalendar\Events::readEvents($event)->items[0];
+        $_me = \App\GoogleCalendar\Events::readEvents($event);
 
         $_event = [
-        'summary'     => $_me->summary,
-        'description' => str_replace('unpaid', 'paid', $_me->description),
-        'start'       => [
-          'dateTime' => $_me->start->dateTime,
-          'timeZone' => config('timezone', 'America/Los_Angeles'),
-        ],
-        'end' => [
-          'dateTime' => $_me->end->dateTime,
-          'timeZone' => config('timezone', 'America/Los_Angeles'),
-        ],
-      ];
+          'summary'     => $_me->summary,
+          'description' => str_replace('unpaid', 'paid', $_me->description),
+        ];
 
-        \App\GoogleCalendar\Events::updateEvents($event, $_event);
-          // dd(\App\GoogleCalendar\Events::$errors);
+       \App\GoogleCalendar\Events::updateEvents($event, $_event);
+         //  \App\GoogleCalendar\Events::$errors;
 
       return redirect('home')->withSuccess(true);
     }

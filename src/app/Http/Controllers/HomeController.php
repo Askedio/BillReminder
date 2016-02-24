@@ -66,73 +66,33 @@ make to date str
       if (isset($_items->items) && count($_items->items) > 0) {
           $_data = [];
           foreach ($_items->items as $_item) {
-              if (!isset($_item->description)) {
-                  continue;
-              }
-
+            if (!isset($_item->description)) continue;
               $_values = explode('|', $_item->description);
               $_total = isset($_values[0]) && is_numeric($_values[0]) ? $_values[0] : 0;
               $_paid = isset($_values[2]) && $_values[2] == 'paid' ? true : false;
 
               $_data[] = [
-            'id'            => $_item->id,
-            'rec_id'        => isset($_item->recurringEventId) ? $_item->recurringEventId : false,
-            'summary'       => $_item->summary,
-            'description'   => $_item->description,
-            'total'         => $_total,
-            'payment_type'  => (isset($_values[1]) ? $_values[1] : 'n/a'),
-            'date'          => \Carbon\Carbon::createFromTimestamp(strtotime($_item->start->dateTime)),
-            'paid'          => $_paid,
-          ];
+                'id'            => $_item->id,
+                'rec_id'        => isset($_item->recurringEventId) ? $_item->recurringEventId : false,
+                'summary'       => $_item->summary,
+                'description'   => $_item->description,
+                'total'         => $_total,
+                'payment_type'  => (isset($_values[1]) ? $_values[1] : 'n/a'),
+                'date'          => \Carbon\Carbon::createFromTimestamp(strtotime($_item->start->dateTime)),
+                'paid'          => $_paid,
+              ];
 
               $_results['total'] = $_results['total'] + $_total;
               if ($_paid) {
                   $_results['paid'] = $_total;
               }
+            }
+
+            usort($_data, ['App\Http\Controllers\HomeController', 'sortByOrder']);
+
+            $_results['events'] = $_data;
           }
-
-          usort($_data, ['App\Http\Controllers\HomeController', 'sortByOrder']);
-
-          $_results['events'] = $_data;
-      }
         }
-
-// create/update event
-$event =
-    [
-  'summary'     => 'Google I/O 2015',
-  'location'    => '800 Howard St., San Francisco, CA 94103',
-  'description' => 'A chance to hear more about Google\'s developer products.',
-  'start'       => [
-    'dateTime' => '2016-02-23T09:00:00-07:00',
-    'timeZone' => 'America/Los_Angeles',
-  ],
-  'end' => [
-    'dateTime' => '2016-02-24T17:00:00-07:00',
-    'timeZone' => 'America/Los_Angeles',
-  ],
-  'recurrence' => [
-    'RRULE:FREQ=DAILY;COUNT=2',
-  ],
-  'attendees' => [
-    ['email' => 'lpage@example.com'],
-    ['email' => 'sbrin@example.com'],
-  ],
-  'reminders' => [
-    'useDefault' => false,
-    'overrides'  => [
-      ['method' => 'email', 'minutes' => 24 * 60],
-      ['method' => 'popup', 'minutes' => 10],
-    ],
-  ],
-
-    ];
-
-// crreate/update cal
-$cal = [
-  'description' => '',
-  'summary'     => '',
-];
 
         return view('home')->with($_results);
     }
