@@ -79,31 +79,32 @@ class EventController extends Controller
 
     public function unpaid(Request $request, $event)
     {
-      $this->process($event, 'unpaid');
-      return redirect('home')->withSuccess(true);
+        $this->process($event, 'unpaid');
+
+        return redirect('home')->withSuccess(true);
     }
 
     public function paid(Request $request, $event)
     {
-      $this->process($event, 'paid');
-      return redirect('home')->withSuccess(true);
+        $this->process($event, 'paid');
+
+        return redirect('home')->withSuccess(true);
     }
 
     private function process($event, $status)
     {
-      \App\GoogleCalendar\Events::setVar('calendar', Auth::user()->calendar);
-      $_me = \App\GoogleCalendar\Events::readEvents($event);
+        \App\GoogleCalendar\Events::setVar('calendar', Auth::user()->calendar);
+        $_me = \App\GoogleCalendar\Events::readEvents($event);
 
-      $_status = ($status == 'paid' 
+        $_status = ($status == 'paid'
         ? str_replace('unpaid', 'paid', $_me->description)
         : str_replace('paid', 'unpaid', $_me->description));
 
-
-      $_event = [
+        $_event = [
         'summary'     => $_me->summary,
         'description' => $_status,
       ];
 
-      \App\GoogleCalendar\Events::updateEvents($event, $_event);
+        \App\GoogleCalendar\Events::updateEvents($event, $_event);
     }
 }
