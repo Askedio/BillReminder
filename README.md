@@ -41,6 +41,6 @@ Google API Key is optinal
 
 After .env is created, migrate
 
-   php artisan migrate
+    php artisan migrate
 
 Edit config/services.php to define your oauth info.
