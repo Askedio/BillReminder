@@ -86,7 +86,7 @@ make to date str
 
               $_results['total'] = $_results['total'] + $_total;
               if ($_paid) {
-                  $_results['paid'] = $_total;
+                  $_results['paid'] = $_results['paid'] + $_total;
               }
           }
 
