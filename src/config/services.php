@@ -36,9 +36,9 @@ return [
     ],
 
     'google' => [
-        'client_id'     => '',
-        'client_secret' => '',
-        'redirect'      => 'http://localhost:8000/authorize',
+        'client_id'     => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_SECRET'),
+        'redirect'      => env('GOOGLE_REDIRECT'),
     ],
 
 ];
