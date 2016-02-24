@@ -47,4 +47,8 @@ After .env is created, migrate
 
     php artisan migrate
 
-Edit config/services.php to define your oauth info.
+Serv
+
+    php artisan serv
+    
+Browse to the test server and authenticate, you should be asked to create a calendar, then add events. Errors are not reported, if the key errors or token is invalid you will be directed back to the home page.
