@@ -79,41 +79,31 @@ class EventController extends Controller
 
     public function unpaid(Request $request, $event)
     {
-        \App\GoogleCalendar\Events::setVar('calendar', Auth::user()->calendar);
-        $_me = \App\GoogleCalendar\Events::readEvents($event);
-
-        $_event = [
-        'summary'     => $_me->summary,
-        'description' => str_replace('paid', 'unpaid', $_me->description),
-        'start'       => [
-          'dateTime' => $_me->start->dateTime,
-          'timeZone' => config('timezone', 'America/Los_Angeles'),
-        ],
-        'end' => [
-          'dateTime' => $_me->end->dateTime,
-          'timeZone' => config('timezone', 'America/Los_Angeles'),
-        ],
-      ];
-
-        \App\GoogleCalendar\Events::updateEvents($event, $_event);
-          // dd(\App\GoogleCalendar\Events::$errors);
-
+      $this->process($event, 'unpaid');
       return redirect('home')->withSuccess(true);
     }
 
     public function paid(Request $request, $event)
     {
-        \App\GoogleCalendar\Events::setVar('calendar', Auth::user()->calendar);
-        $_me = \App\GoogleCalendar\Events::readEvents($event);
-
-        $_event = [
-          'summary'     => $_me->summary,
-          'description' => str_replace('unpaid', 'paid', $_me->description),
-        ];
-
-       \App\GoogleCalendar\Events::updateEvents($event, $_event);
-         //  \App\GoogleCalendar\Events::$errors;
-
+      $this->process($event, 'paid');
       return redirect('home')->withSuccess(true);
+    }
+
+    private function process($event, $status)
+    {
+      \App\GoogleCalendar\Events::setVar('calendar', Auth::user()->calendar);
+      $_me = \App\GoogleCalendar\Events::readEvents($event);
+
+      $_status = ($status == 'paid' 
+        ? str_replace('unpaid', 'paid', $_me->description)
+        : str_replace('paid', 'unpaid', $_me->description));
+
+
+      $_event = [
+        'summary'     => $_me->summary,
+        'description' => $_status,
+      ];
+
+      \App\GoogleCalendar\Events::updateEvents($event, $_event);
     }
 }
