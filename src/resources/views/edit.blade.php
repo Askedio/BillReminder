@@ -6,13 +6,7 @@
 </style>
 
   <section class="container text-left" style="width: 60%; margin: 60px auto">
-
-
-
-
     <h1 class="text-center">My Bill Reminders</h1>
-
-
       <div class="panel panel-primary">
         <div class="panel-heading">Edit this instance of: {{ $event->summary }} </div>
         <div class="panel-body text-left">
@@ -41,5 +35,4 @@
         </div>
       </div>
   </section>
-
 @endsection
