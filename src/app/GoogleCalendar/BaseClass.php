@@ -115,7 +115,7 @@ class BaseClass
      */
     private static function get_url()
     {
-      return self::$google_api.self::$url.self::build_request();
+        return self::$google_api.self::$url.self::build_request();
     }
 
     /**

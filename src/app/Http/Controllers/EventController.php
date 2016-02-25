@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\GoogleCalendar\Events as GoogleEvents;
+use App\Helpers\BillReminder;
 use Auth;
 use Illuminate\Http\Request;
-use \App\Helpers\BillReminder;
-use \App\GoogleCalendar\Events as GoogleEvents;
 
 class EventController extends Controller
 {
@@ -26,12 +26,10 @@ class EventController extends Controller
      */
     public function store(Request $request)
     {
+        GoogleEvents::setVar('calendar', Auth::user()->calendar);
+        GoogleEvents::createEvents(BillReminder::eventData($request));
 
-
-      GoogleEvents::setVar('calendar', Auth::user()->calendar);
-      GoogleEvents::createEvents(BillReminder::eventData($request));
-
-      return redirect('home')->withSuccess(true);
+        return redirect('home')->withSuccess(true);
     }
 
     public function delete(Request $request, $event)
@@ -70,6 +68,4 @@ class EventController extends Controller
 
         return redirect('home')->withSuccess(true);
     }
-
-
 }
