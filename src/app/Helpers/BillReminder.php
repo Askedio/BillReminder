@@ -2,16 +2,15 @@
 
 namespace App\Helpers;
 
+use App\GoogleCalendar\Events as GoogleEvents;
 use Auth;
-use \App\GoogleCalendar\Events as GoogleEvents;
 
 class BillReminder
 {
-
-  public static function home()
-  {
-       $_results = ['total' => 0, 'paid' => 0, 'events' => []];
-       if (Auth::user()->calendar) {
+    public static function home()
+    {
+        $_results = ['total' => 0, 'paid' => 0, 'events' => []];
+        if (Auth::user()->calendar) {
             \App\GoogleCalendar\Calendar::setVar('calendar', Auth::user()->calendar);
             $_items = \App\GoogleCalendar\Events::readEvents();
             $errors = \App\GoogleCalendar\Calendar::$errors;
@@ -24,16 +23,18 @@ class BillReminder
                 }
             }
 
-           if (isset($_items->items) && count($_items->items) > 0) {
-              $_data = [];
-              foreach ($_items->items as $_item) {
-                  if (!isset($_item->description)) continue;
-                  
-                  $_values = explode('|', $_item->description);
-                  $_total = isset($_values[0]) && is_numeric($_values[0]) ? $_values[0] : 0;
-                  $_paid = isset($_values[2]) && $_values[2] == 'paid' ? true : false;
+            if (isset($_items->items) && count($_items->items) > 0) {
+                $_data = [];
+                foreach ($_items->items as $_item) {
+                    if (!isset($_item->description)) {
+                        continue;
+                    }
 
-                  $_data[] = [
+                    $_values = explode('|', $_item->description);
+                    $_total = isset($_values[0]) && is_numeric($_values[0]) ? $_values[0] : 0;
+                    $_paid = isset($_values[2]) && $_values[2] == 'paid' ? true : false;
+
+                    $_data[] = [
                     'id'            => $_item->id,
                     'rec_id'        => isset($_item->recurringEventId) ? $_item->recurringEventId : false,
                     'summary'       => $_item->summary,
@@ -44,26 +45,25 @@ class BillReminder
                     'paid'          => $_paid,
                   ];
 
-                  $_results['total'] = $_results['total'] + $_total;
-                  if ($_paid) $_results['paid'] = $_results['paid'] + $_total;
-                  
-              }
+                    $_results['total'] = $_results['total'] + $_total;
+                    if ($_paid) {
+                        $_results['paid'] = $_results['paid'] + $_total;
+                    }
+                }
 
-              usort($_data, ['App\Helpers\BillReminder', 'sortByOrder']);
+                usort($_data, ['App\Helpers\BillReminder', 'sortByOrder']);
 
-              $_results['events'] = $_data;
-           }
-       }
+                $_results['events'] = $_data;
+            }
+        }
 
-       return view('home')->with($_results);
-  }
+        return view('home')->with($_results);
+    }
 
-
-  private static function sortByOrder($a, $b)
-  {
-      return $a['date']->timestamp - $b['date']->timestamp;
-  }
-
+    private static function sortByOrder($a, $b)
+    {
+        return $a['date']->timestamp - $b['date']->timestamp;
+    }
 
     public static function process($event, $status)
     {
@@ -79,13 +79,13 @@ class BillReminder
         'description' => $_status,
       ];
 
-      \App\GoogleCalendar\Events::updateEvents($event, $_event);
+        \App\GoogleCalendar\Events::updateEvents($event, $_event);
     }
 
     public static function eventData($request)
-  {
-
+    {
         $_calendar = $request->input('calendar') ?: 'Bill Reminders';
+
         return [
         'summary'     => $request->input('summary'),
         'description' => filter_var($request->input('total'), FILTER_SANITIZE_NUMBER_INT).'|'.str_replace('|', '', $request->input('type')).'|unpaid',
@@ -108,10 +108,5 @@ class BillReminder
           ],
         ],
       ];
-
-
-  }
-
-
-
+    }
 }

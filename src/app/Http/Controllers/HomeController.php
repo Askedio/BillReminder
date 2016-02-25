@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\BillReminder;
 use Auth;
-use \App\Helpers\BillReminder;
 
 class HomeController extends Controller
 {
@@ -24,8 +24,6 @@ class HomeController extends Controller
      */
     public function index()
     {
-      return BillReminder::home();
+        return BillReminder::home();
     }
-
-
 }
