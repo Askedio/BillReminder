@@ -7,7 +7,6 @@ use App\GoogleCalendar\Events as GoogleEvents;
 use Auth;
 use Carbon\Carbon;
 
-
 class BillReminder
 {
     public static function home()
