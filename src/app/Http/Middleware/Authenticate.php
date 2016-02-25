@@ -19,7 +19,7 @@ class Authenticate
     public function handle($request, Closure $next, $guard = null)
     {
 
-        // TO-DO: really needs a better solution.
+        /* TO-DO: really needs a better solution. */
         \App\GoogleCalendar\Calendar::setVar('calendar', 'primary');
         \App\GoogleCalendar\Calendar::readCalendar();
         $errors = \App\GoogleCalendar\Calendar::$errors;
