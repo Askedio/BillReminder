@@ -2,8 +2,11 @@
 
 namespace App\Helpers;
 
+use App\GoogleCalendar\Calendar;
 use App\GoogleCalendar\Events as GoogleEvents;
 use Auth;
+use Carbon\Carbon;
+
 
 class BillReminder
 {
@@ -11,9 +14,9 @@ class BillReminder
     {
         $_results = ['total' => 0, 'paid' => 0, 'events' => []];
         if (Auth::user()->calendar) {
-            \App\GoogleCalendar\Calendar::setVar('calendar', Auth::user()->calendar);
-            $_items = \App\GoogleCalendar\Events::readEvents();
-            $errors = \App\GoogleCalendar\Calendar::$errors;
+            Calendar::setVar('calendar', Auth::user()->calendar);
+            $_items = GoogleEvents::readEvents();
+            $errors = Calendar::$errors;
 
             /* TO-DO: need proper error checking, in this case notFound = reset calendar */
             if (is_array($errors)) {
@@ -41,7 +44,7 @@ class BillReminder
                     'description'   => $_item->description,
                     'total'         => $_total,
                     'payment_type'  => (isset($_values[1]) ? $_values[1] : 'n/a'),
-                    'date'          => \Carbon\Carbon::createFromTimestamp(strtotime($_item->start->dateTime)),
+                    'date'          => Carbon::createFromTimestamp(strtotime($_item->start->dateTime)),
                     'paid'          => $_paid,
                   ];
 
@@ -67,8 +70,8 @@ class BillReminder
 
     public static function process($event, $status)
     {
-        \App\GoogleCalendar\Events::setVar('calendar', Auth::user()->calendar);
-        $_me = \App\GoogleCalendar\Events::readEvents($event);
+        GoogleEvents::setVar('calendar', Auth::user()->calendar);
+        $_me = GoogleEvents::readEvents($event);
 
         $_status = ($status == 'paid'
         ? str_replace('unpaid', 'paid', $_me->description)
@@ -79,7 +82,7 @@ class BillReminder
         'description' => $_status,
       ];
 
-        \App\GoogleCalendar\Events::updateEvents($event, $_event);
+        GoogleEvents::updateEvents($event, $_event);
     }
 
     public static function eventData($request)
