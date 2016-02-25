@@ -3,15 +3,17 @@ A simple Laravel and Google Calendar based bill reminder
 
 
 # Install
-Clone repository
+Clone this repository.
+
+Install packages with composer:
 
     composer install
 
-Create .env
+Since this not (yet) a package, create a .env:
 
     APP_ENV=local
     APP_DEBUG=true
-    APP_KEY=...
+    APP_KEY=
     APP_URL=http://localhost
      
     DB_HOST=127.0.0.1
@@ -36,18 +38,18 @@ Create .env
    
     GOOGLE_API_KEY=
    
-    GOOGLE_CLIENT_ID=<oauth client id>
-    GOOGLE_SECRET=<oauth secret>
+    GOOGLE_CLIENT_ID=
+    GOOGLE_SECRET=
     GOOGLE_REDIRECT=http://localhost:8000/authorize
         
         
-Google API Key is optinal
+- Google API Key is optional
 
-After .env is created, migrate
+After .env is created, migrate:
 
     php artisan migrate
 
-Serv
+Serv:
 
     php artisan serv
     
