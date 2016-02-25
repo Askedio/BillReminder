@@ -1,6 +1,8 @@
 # BillReminder
 A simple Laravel and Google Calendar based bill reminder
 
+![Google Calendar Bill Reminder](http://i.imgur.com/SzIe1no.png)
+
 
 # Install
 Clone this repository.
