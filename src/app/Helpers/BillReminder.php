@@ -14,8 +14,7 @@ class BillReminder
         $_results = ['total' => 0, 'paid' => 0, 'events' => []];
 
         if (Auth::user()->calendar) {
-
-            switch($request->input('display')){
+            switch ($request->input('display')) {
              case '2month':
                Calendar::setVar('end', 'last day of next month');
              break;
@@ -50,9 +49,9 @@ class BillReminder
 
                     /* TO-DO: needs proper validation */
                     $_values = explode('|', $_item->description);
-                    $_total  = isset($_values[0]) && is_numeric($_values[0]) ? $_values[0] : 0;
-                    $_type   = isset($_values[1]) ? $_values[1] : 'n/a';
-                    $_paid   = isset($_values[2]) && $_values[2] == 'paid' ? $_total : 0;
+                    $_total = isset($_values[0]) && is_numeric($_values[0]) ? $_values[0] : 0;
+                    $_type = isset($_values[1]) ? $_values[1] : 'n/a';
+                    $_paid = isset($_values[2]) && $_values[2] == 'paid' ? $_total : 0;
 
                     $_data[] = [
                     'id'            => $_item->id,
@@ -65,17 +64,15 @@ class BillReminder
                     'date'          => Carbon::createFromTimestamp(strtotime($_item->start->dateTime)),
                   ];
 
-                  $_results['breakdowns'][$_type]['total'] = (isset($_results['breakdowns'][$_type]['total']) ? $_results['breakdowns'][$_type]['total'] : 0) + $_total;
-                  $_results['breakdowns'][$_type]['paid'] = (isset($_results['breakdowns'][$_type]['paid']) ? $_results['breakdowns'][$_type]['paid'] : 0) + $_paid;
-
-
+                    $_results['breakdowns'][$_type]['total'] = (isset($_results['breakdowns'][$_type]['total']) ? $_results['breakdowns'][$_type]['total'] : 0) + $_total;
+                    $_results['breakdowns'][$_type]['paid'] = (isset($_results['breakdowns'][$_type]['paid']) ? $_results['breakdowns'][$_type]['paid'] : 0) + $_paid;
                 }
 
                 usort($_data, ['App\Helpers\BillReminder', 'sortByOrder']);
 
                 $_results['events'] = $_data;
-                $_results['total']  = array_sum(array_column($_data, 'total'));
-                $_results['paid']   = array_sum(array_column($_data, 'paid'));
+                $_results['total'] = array_sum(array_column($_data, 'total'));
+                $_results['paid'] = array_sum(array_column($_data, 'paid'));
             }
         }
 
