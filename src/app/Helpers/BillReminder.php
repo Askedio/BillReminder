@@ -9,25 +9,25 @@ use Carbon\Carbon;
 
 class BillReminder
 {
-
     private static function errors()
     {
-            $errors = Calendar::$errors;
+        $errors = Calendar::$errors;
             /* TO-DO: need proper error checking, in this case notFound = reset calendar */
             if (is_array($errors)) {
                 if ($errors[0]->reason == 'notFound') {
                     Auth::user()->calendar = '';
                     Auth::user()->save();
                 }
-              return $errors;
+
+                return $errors;
             }
 
-            return false;
+        return false;
     }
 
     private static function display($display)
-  {
-            switch ($display) {
+    {
+        switch ($display) {
              case '2month':
                Calendar::setVar('end', 'last day of next month');
              break;
@@ -36,15 +36,12 @@ class BillReminder
                Calendar::setVar('end', '+2 weeks');
              break;
             }
+    }
 
-  }
-
-private static function hasItems($_items)
-  {
-
-    return !self::errors() && is_object($_items) && isset($_items->items) && count($_items->items) > 0;
-
-  }
+    private static function hasItems($_items)
+    {
+        return !self::errors() && is_object($_items) && isset($_items->items) && count($_items->items) > 0;
+    }
 
     public static function home($display)
     {
@@ -56,7 +53,6 @@ private static function hasItems($_items)
             Calendar::setVar('calendar', Auth::user()->calendar);
 
             $_items = GoogleEvents::readEvents();
-
 
             if (self::hasItems($_items)) {
                 $_data = [];
