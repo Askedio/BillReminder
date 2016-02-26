@@ -9,11 +9,24 @@ use Carbon\Carbon;
 
 class BillReminder
 {
-    public static function home($display=false)
-    {
-        $_results = ['total' => 0, 'paid' => 0, 'events' => []];
 
-        if (Auth::user()->calendar) {
+    private static function errors()
+    {
+            $errors = Calendar::$errors;
+            /* TO-DO: need proper error checking, in this case notFound = reset calendar */
+            if (is_array($errors)) {
+                if ($errors[0]->reason == 'notFound') {
+                    Auth::user()->calendar = '';
+                    Auth::user()->save();
+                }
+              return $errors;
+            }
+
+            return false;
+    }
+
+    private static function display($display)
+  {
             switch ($display) {
              case '2month':
                Calendar::setVar('end', 'last day of next month');
@@ -24,30 +37,36 @@ class BillReminder
              break;
             }
 
+  }
+
+private static function hasItems($_items)
+  {
+
+    return !self::errors() && is_object($_items) && isset($_items->items) && count($_items->items) > 0;
+
+  }
+
+    public static function home($display)
+    {
+        $_results = ['total' => 0, 'paid' => 0, 'events' => []];
+
+        if (Auth::user()->calendar) {
+            self::display($display);
+
             Calendar::setVar('calendar', Auth::user()->calendar);
 
             $_items = GoogleEvents::readEvents();
-            $errors = Calendar::$errors;
 
-            /* TO-DO: need proper error checking, in this case notFound = reset calendar */
-            if (is_array($errors)) {
-                if ($errors[0]->reason == 'notFound') {
-                    Auth::user()->calendar = '';
-                    Auth::user()->save();
-                }
-            }
 
-            /* TO-DO: needs proper validation */
-            if (isset($_items->items) && count($_items->items) > 0) {
+            if (self::hasItems($_items)) {
                 $_data = [];
                 $_results['breakdown'] = [];
 
                 foreach ($_items->items as $_item) {
-                    if (!isset($_item->description)) {
+                    if (!isset($_item->description) || !preg_match('/|/s', $_item->description)) {
                         continue;
                     }
 
-                    /* TO-DO: needs proper validation */
                     $_values = explode('|', $_item->description);
                     $_total = isset($_values[0]) && is_numeric($_values[0]) ? $_values[0] : 0;
                     $_type = isset($_values[1]) ? $_values[1] : 'n/a';

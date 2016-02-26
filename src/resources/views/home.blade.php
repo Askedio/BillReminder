@@ -8,6 +8,12 @@
     </div>
   @endif
 
+  @if(Session::get('errors'))
+    <div class="alert alert-danger text-center">  
+      <h4>Error!</h4>
+    </div>
+  @endif
+
   @if(!Auth::user()->calendar)
     <h1>Let's get started!</h1>
     <p>What do you want to call your Bill Reminder calendar?</p>
