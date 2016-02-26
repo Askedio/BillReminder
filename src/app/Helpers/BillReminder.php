@@ -9,11 +9,24 @@ use Carbon\Carbon;
 
 class BillReminder
 {
-    public static function home()
+    public static function home($request)
     {
         $_results = ['total' => 0, 'paid' => 0, 'events' => []];
+
         if (Auth::user()->calendar) {
+
+            switch($request->input('display')){
+             case '2month':
+               Calendar::setVar('end', 'last day of next month');
+             break;
+             case '2week':
+               Calendar::setVar('start', 'yesterday');
+               Calendar::setVar('end', '+2 weeks');
+             break;
+            }
+
             Calendar::setVar('calendar', Auth::user()->calendar);
+
             $_items = GoogleEvents::readEvents();
             $errors = Calendar::$errors;
 
@@ -25,16 +38,21 @@ class BillReminder
                 }
             }
 
+            /* TO-DO: needs proper validation */
             if (isset($_items->items) && count($_items->items) > 0) {
                 $_data = [];
+                $_results['breakdown'] = [];
+
                 foreach ($_items->items as $_item) {
                     if (!isset($_item->description)) {
                         continue;
                     }
 
+                    /* TO-DO: needs proper validation */
                     $_values = explode('|', $_item->description);
-                    $_total = isset($_values[0]) && is_numeric($_values[0]) ? $_values[0] : 0;
-                    $_paid = isset($_values[2]) && $_values[2] == 'paid' ? true : false;
+                    $_total  = isset($_values[0]) && is_numeric($_values[0]) ? $_values[0] : 0;
+                    $_type   = isset($_values[1]) ? $_values[1] : 'n/a';
+                    $_paid   = isset($_values[2]) && $_values[2] == 'paid' ? $_total : 0;
 
                     $_data[] = [
                     'id'            => $_item->id,
@@ -42,20 +60,22 @@ class BillReminder
                     'summary'       => $_item->summary,
                     'description'   => $_item->description,
                     'total'         => $_total,
-                    'payment_type'  => (isset($_values[1]) ? $_values[1] : 'n/a'),
-                    'date'          => Carbon::createFromTimestamp(strtotime($_item->start->dateTime)),
                     'paid'          => $_paid,
+                    'payment_type'  => $_type,
+                    'date'          => Carbon::createFromTimestamp(strtotime($_item->start->dateTime)),
                   ];
 
-                    $_results['total'] = $_results['total'] + $_total;
-                    if ($_paid) {
-                        $_results['paid'] = $_results['paid'] + $_total;
-                    }
+                  $_results['breakdowns'][$_type]['total'] = (isset($_results['breakdowns'][$_type]['total']) ? $_results['breakdowns'][$_type]['total'] : 0) + $_total;
+                  $_results['breakdowns'][$_type]['paid'] = (isset($_results['breakdowns'][$_type]['paid']) ? $_results['breakdowns'][$_type]['paid'] : 0) + $_paid;
+
+
                 }
 
                 usort($_data, ['App\Helpers\BillReminder', 'sortByOrder']);
 
                 $_results['events'] = $_data;
+                $_results['total']  = array_sum(array_column($_data, 'total'));
+                $_results['paid']   = array_sum(array_column($_data, 'paid'));
             }
         }
 
@@ -77,9 +97,9 @@ class BillReminder
         : str_replace('paid', 'unpaid', $_me->description));
 
         $_event = [
-        'summary'     => $_me->summary,
-        'description' => $_status,
-      ];
+          'summary'     => $_me->summary,
+          'description' => $_status,
+        ];
 
         GoogleEvents::updateEvents($event, $_event);
     }
@@ -92,11 +112,11 @@ class BillReminder
         'summary'     => $request->input('summary'),
         'description' => filter_var($request->input('total'), FILTER_SANITIZE_NUMBER_INT).'|'.str_replace('|', '', $request->input('type')).'|unpaid',
         'start'       => [
-          'dateTime' => GoogleEvents::get_time($request->input('date').' 12am'),
+          'dateTime' => GoogleEvents::get_time($request->input('date').' 10am'),
           'timeZone' => config('timezone', 'America/Los_Angeles'),
         ],
         'end' => [
-          'dateTime' => GoogleEvents::get_time($request->input('date').' 12pm'),
+          'dateTime' => GoogleEvents::get_time($request->input('date').' 10pm'),
           'timeZone' => config('timezone', 'America/Los_Angeles'),
         ],
         'recurrence' => [
