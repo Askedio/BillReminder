@@ -32,6 +32,7 @@ Route::group(['middleware' => 'web'], function () {
 
     Route::get('/', function () {return view('welcome'); });
     Route::get('/home', 'HomeController@index');
+    Route::get('/home/{display}', 'HomeController@index');
     Route::resource('/calendar', 'CalendarController');
     Route::resource('/event', 'EventController');
     Route::get('/event/delete/{event}', 'EventController@delete');

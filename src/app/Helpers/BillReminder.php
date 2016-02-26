@@ -9,12 +9,12 @@ use Carbon\Carbon;
 
 class BillReminder
 {
-    public static function home($request)
+    public static function home($display=false)
     {
         $_results = ['total' => 0, 'paid' => 0, 'events' => []];
 
         if (Auth::user()->calendar) {
-            switch ($request->input('display')) {
+            switch ($display) {
              case '2month':
                Calendar::setVar('end', 'last day of next month');
              break;

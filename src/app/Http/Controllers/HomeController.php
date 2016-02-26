@@ -23,8 +23,8 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index($display=false)
     {
-        return BillReminder::home($request);
+        return BillReminder::home($display);
     }
 }

@@ -35,8 +35,8 @@
 
       <div class="text-center" style="margin: 0 0 20px 0">
         <a href="{{ url('/home') }}" class="btn btn-default">1 Month View</a>
-        <a href="{{ url('/home?display=2month') }}" class="btn btn-default">2 Month View</a>
-        <a href="{{ url('/home?display=2week') }}" class="btn btn-default">Next 2 Weeks</a>
+        <a href="{{ url('/home/2month') }}" class="btn btn-default">2 Month View</a>
+        <a href="{{ url('/home/2week') }}" class="btn btn-default">Next 2 Weeks</a>
       </div>
 
 
