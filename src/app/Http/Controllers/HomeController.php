@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Helpers\BillReminder;
 use Auth;
-use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
@@ -23,7 +22,7 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index($display=false)
+    public function index($display = false)
     {
         return BillReminder::home($display);
     }
