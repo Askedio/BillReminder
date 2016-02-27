@@ -2,11 +2,9 @@
 
 namespace App\Http\Middleware;
 
+use Askedio\Laravel5GoogleCalendar\Calendar;
 use Closure;
 use Illuminate\Support\Facades\Auth;
-
-use Askedio\Laravel5GoogleCalendar\Calendar;
-
 
 class Authenticate
 {
