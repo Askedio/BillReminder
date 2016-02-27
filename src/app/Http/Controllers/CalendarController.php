@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Auth;
-use Calendar;
+use Askedio\Laravel5GoogleCalendar\Calendar;
 use Illuminate\Http\Request;
 
 class CalendarController extends Controller

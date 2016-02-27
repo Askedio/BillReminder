@@ -2,8 +2,8 @@
 
 namespace App\Helpers;
 
-use App\GoogleCalendar\Calendar;
-use App\GoogleCalendar\Events as GoogleEvents;
+use Askedio\Laravel5GoogleCalendar\Calendar;
+use Askedio\Laravel5GoogleCalendar\Events as GoogleEvents;
 use Auth;
 use Carbon\Carbon;
 

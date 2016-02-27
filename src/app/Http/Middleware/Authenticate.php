@@ -5,6 +5,9 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Support\Facades\Auth;
 
+use Askedio\Laravel5GoogleCalendar\Calendar;
+
+
 class Authenticate
 {
     /**
@@ -20,9 +23,9 @@ class Authenticate
     {
 
         /* TO-DO: really needs a better solution. */
-        \App\GoogleCalendar\Calendar::setVar('calendar', 'primary');
-        \App\GoogleCalendar\Calendar::readCalendar();
-        $errors = \App\GoogleCalendar\Calendar::$errors;
+        Calendar::setVar('calendar', 'primary');
+        Calendar::readCalendar();
+        $errors = Calendar::$errors;
         if (is_array($errors)) {
             Auth::logout();
             if ($request->ajax() || $request->wantsJson()) {

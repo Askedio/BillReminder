@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\GoogleCalendar\Events as GoogleEvents;
+use Askedio\Laravel5GoogleCalendar\Events as GoogleEvents;
 use App\Helpers\BillReminder;
 use Auth;
 use Illuminate\Http\Request;
