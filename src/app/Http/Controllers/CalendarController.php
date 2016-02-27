@@ -28,8 +28,8 @@ class CalendarController extends Controller
         $_calendar = $request->input('calendar') ?: 'Bill Reminders';
         $_id = false;
 
-        \App\GoogleCalendar\Calendar::setVar('calendar', '');
-        $_calendars = \App\GoogleCalendar\Calendar::readCalendar();
+       Calendar::setVar('calendar', '');
+        $_calendars =Calendar::readCalendar();
         if ($_calendars->items) {
             $_found = false;
             foreach ($_calendars->items as $_cal) {
@@ -41,12 +41,12 @@ class CalendarController extends Controller
         }
 
         if (!$_id) {
-            \App\GoogleCalendar\Calendar::setVar('calendar', 'create');
-            $_results = \App\GoogleCalendar\Calendar::createCalendar([
+           Calendar::setVar('calendar', 'create');
+            $_results =Calendar::createCalendar([
           'summary'         => $request->input('calendar') ?: 'Bill Reminders',
           'description'     => 'Created by BillReminder',
         ]);
-        // needs check if isset
+        /* TO-DO: Needs proper checks. */
         $_id = $_results->id;
         }
 
