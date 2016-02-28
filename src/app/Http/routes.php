@@ -27,8 +27,7 @@ Route::group(['middleware' => ['web']], function () {
   Route::get('/auth', 'Auth\AuthController@redirectToProvider');
 });
 
-Route::group(['middleware' => 'web'], function () {
-    Route::auth();
+Route::group(['middleware' => ['web', 'auth', 'google']], function () {
 
     Route::get('/', function () {return view('welcome'); });
     Route::get('/home', 'HomeController@index');

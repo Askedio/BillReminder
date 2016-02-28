@@ -6,7 +6,7 @@ use Askedio\Laravel5GoogleCalendar\Calendar;
 use Closure;
 use Illuminate\Support\Facades\Auth;
 
-class Authenticate
+class GoogleAuthenticate
 {
     /**
      * Handle an incoming request.
@@ -20,14 +20,19 @@ class Authenticate
     public function handle($request, Closure $next, $guard = null)
     {
 
-        if (Auth::guard($guard)->guest()) {
+        Calendar::setVar('calendar', 'primary');
+        Calendar::readCalendar();
+        $errors = Calendar::$errors;
+        if (is_array($errors)) {
+            Auth::logout();
             if ($request->ajax() || $request->wantsJson()) {
-                return response('Unauthorized.', 401);
+                return response('Token Expired.', 401);
             } else {
-                return redirect()->guest('login');
+                return redirect('/')->with(['error' => 'Token Expired']);
             }
         }
-        
+
+
         return $next($request);
     }
 }
