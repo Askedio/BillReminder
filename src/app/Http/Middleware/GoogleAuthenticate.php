@@ -19,7 +19,6 @@ class GoogleAuthenticate
      */
     public function handle($request, Closure $next, $guard = null)
     {
-
         Calendar::setVar('calendar', 'primary');
         Calendar::readCalendar();
         $errors = Calendar::$errors;
@@ -31,7 +30,6 @@ class GoogleAuthenticate
                 return redirect('/')->with(['error' => 'Token Expired']);
             }
         }
-
 
         return $next($request);
     }
