@@ -28,8 +28,8 @@ class CalendarController extends Controller
         $_calendar = $request->input('calendar') ?: 'Bill Reminders';
         $_id = false;
 
-       Calendar::setVar('calendar', '');
-        $_calendars =Calendar::readCalendar();
+        Calendar::setVar('calendar', '');
+        $_calendars = Calendar::readCalendar();
         if ($_calendars->items) {
             $_found = false;
             foreach ($_calendars->items as $_cal) {
@@ -41,8 +41,8 @@ class CalendarController extends Controller
         }
 
         if (!$_id) {
-           Calendar::setVar('calendar', 'create');
-            $_results =Calendar::createCalendar([
+            Calendar::setVar('calendar', 'create');
+            $_results = Calendar::createCalendar([
           'summary'         => $request->input('calendar') ?: 'Bill Reminders',
           'description'     => 'Created by BillReminder',
         ]);
