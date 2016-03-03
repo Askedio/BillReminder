@@ -23,6 +23,7 @@
 */
 
 Route::group(['middleware' => ['web']], function () {
+  Route::get('/', function () {return view('welcome'); });
   Route::get('/authorize', 'Auth\AuthController@handleProviderCallback');
   Route::get('/auth', 'Auth\AuthController@redirectToProvider');
   Route::get('/login', 'Auth\AuthController@redirectToProvider');
@@ -30,7 +31,6 @@ Route::group(['middleware' => ['web']], function () {
 
 Route::group(['middleware' => ['web', 'auth', 'google']], function () {
 
-    Route::get('/', function () {return view('welcome'); });
     Route::get('/home', 'HomeController@index');
     Route::get('/home/{display}', 'HomeController@index');
     Route::resource('/calendar', 'CalendarController');
