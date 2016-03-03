@@ -15,6 +15,7 @@
     <style>
       section{margin-top:50px}
       .alert h4{margin-top:10px}
+      footer{margin:0 0 50px 0}
     </style>
 
 </head>
@@ -24,7 +25,7 @@
 
 
     <footer class="section text-center" style="margin-top: 150px">
-     &copy; {{{ date('Y') }}} <a href="https://asked.io" target="_new">Asked.io</a> <a href="https://github.com/Askedio"><em class="fa fa-github"></em></a>
+     &copy; {{{ date('Y') }}} <a href="https://asked.io" target="_new">Asked.io</a> <a href="https://github.com/Askedio"><em class="fa fa-github"></em></a> | <a href="https://github.com/Askedio/BillReminder" target="_blank">Fork this software</a>
     </footer>
 
 

@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<section class="container text-left" style="width: 60%; margin: 60px auto">
+<section class="container text-left" style="max-width: 640px; margin: 60px auto">
   @if(Session::get('success'))
     <div class="alert alert-success text-center">  
       <h4>Success!</h4>
