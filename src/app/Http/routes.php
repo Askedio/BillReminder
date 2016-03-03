@@ -27,7 +27,6 @@ Route::group(['middleware' => ['web']], function () {
   Route::get('/authorize', 'Auth\AuthController@handleProviderCallback');
   Route::get('/auth', 'Auth\AuthController@redirectToProvider');
   Route::get('/login', 'Auth\AuthController@redirectToProvider');
-  Route::get('logout', 'Auth\AuthController@getLogout');
 });
 
 Route::group(['middleware' => ['web', 'auth', 'google']], function () {

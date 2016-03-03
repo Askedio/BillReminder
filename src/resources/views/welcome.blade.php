@@ -29,11 +29,9 @@
     @else
       <h2>Welcome back, {{ Auth::user()->name }}!</h2>
       <p><small>
-        Start using Google Calendar to remember your bills by clicking <a href="{{ url('/home') }}">My Bill Reminders</a>.<br>
-        When you're done, <a href="{{ url('/logout') }}">logout</a>.
+        Start using Google Calendar to remember your bills by clicking <a href="{{ url('/home') }}">My Bill Reminders</a>.
       </small></p>
       <a class="btn btn-success btn-lg" href="{{ url('/home') }}"><em class="fa fa-dashboard"></em> My Bill Reminders</a>
-      <a class="btn btn-danger btn-lg" href="{{ url('/logout') }}"><i class="fa fa-btn fa-sign-out"></i>Logout</a>
     @endif
   </div>
   <div class="alert alert-warning text-center"><h4>We save your name, email, avatar, reminder calendar, and authentication token from Google.</h4></div>
